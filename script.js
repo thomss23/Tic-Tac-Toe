@@ -333,6 +333,7 @@ const DisplayController = (() => {
         menuElements.classList.toggle("hidden");
     }
 
+    return {squares};
     
 })();
 
@@ -359,10 +360,22 @@ const AI = ((ai, human) => {
         return move;
     }
 
-    let scores = {
-        'X':1,
-        'O':-1,
-        'Tie': 0
+
+    let scores;
+    
+    if(ai == "O") {
+        scores = {
+            'O':10,
+            'X':-10,
+            'Tie': 0
+        }
+    
+    } else {
+        scores = {
+            'X':10,
+            'O':-10,
+            'Tie': 0
+        }
     }
 
     const minimax = (isMaximizing) => {
