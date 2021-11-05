@@ -34,20 +34,6 @@ body {
   position: relative;
 }
 
-body:after {
-  content: "";
-  display: block;
-  position: fixed;
-  border-radius: 0.1em 0.1em 0 0.1em;
-  width: 50px;
-  height: 8px;
-  background: #f1f1f1;
-  top: 80%;
-  margin-top: 75px;
-  margin-right: 60px;
-  right: 5%;
-  box-shadow: inset 0 -4px 1px rgba(0, 0, 0, 0.3), -1px -1px 1px rgba(0, 0, 0, 0.2), 0 2px 0 rgba(0, 0, 0, 0.3)
-}
 
 .option:hover {
   text-decoration: underline;
@@ -55,6 +41,11 @@ body:after {
 
 .title {
   text-align: center;
+  font-size: 35px;
+}
+
+.menu {
+  font-size: 35px;
 }
 
 .hidden {
@@ -82,11 +73,13 @@ body:after {
 .game-menu {
   display: none;
   gap:5px;
+  font-size: 35px;
 }
 
 .restart {
   display: none;
   gap:5px;
+  font-size: 35px;
 }
 
 .marker {
@@ -108,6 +101,7 @@ i {
 .result {
   color: #eba652;
   text-align: center;
+  font-size: 30px;
 }
 
 .left-side {
@@ -125,11 +119,10 @@ a {
    color:#E8E8E8;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 955px) {
   .board-column {
-    border: 2px solid white;
-    width:100px;
-    height: 100px;
+    width:110px;
+    height: 110px;
   }
 
   .game-menu {
@@ -149,6 +142,22 @@ a {
   }
 
   .menu {
-    font-size:35px;
+    font-size:25px;
+  }
+}
+
+@media screen and (min-width: 956px) and (max-width: 1150px) {
+
+  .board-column {
+    width:110px;
+    height: 110px;
+  }
+
+  .game-menu {
+    font-size: 30px;
+  }
+
+  .restart {
+    font-size: 30px;
   }
 }
