@@ -362,7 +362,7 @@ const AI = ((ai, human) => {
 
 
     let scores;
-    
+
     if(ai == "O") {
         scores = {
             'O':10,
@@ -404,7 +404,6 @@ const AI = ((ai, human) => {
         } else {
 
             let bestScore = Infinity;
-            // Is the spot available?
             for(let i = 0; i < 9; i++) {
 
                 if(Gameboard.getBoard()[i] == 0) {

@@ -116,6 +116,11 @@ i {
 
 }
 
-.info:hover {
+a:hover {
   color: #B78240;
 }
+
+ a {
+   text-decoration: none;
+   color:#E8E8E8;
+ }
