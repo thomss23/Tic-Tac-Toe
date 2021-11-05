@@ -120,7 +120,35 @@ a:hover {
   color: #B78240;
 }
 
- a {
+a {
    text-decoration: none;
    color:#E8E8E8;
- }
+}
+
+@media screen and (max-width: 800px) {
+  .board-column {
+    border: 2px solid white;
+    width:100px;
+    height: 100px;
+  }
+
+  .game-menu {
+    font-size: 20px;
+    display: none;
+    gap:5px;
+  }
+
+  .left-side {
+    position:fixed;
+    bottom: 20%;
+  
+  }
+
+  .restart {
+    font-size: 20px;
+  }
+
+  .menu {
+    font-size:35px;
+  }
+}
