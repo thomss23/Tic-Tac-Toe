@@ -288,7 +288,7 @@ const DisplayController = (() => {
             let optionXorO = prompt("Play X or O?");
 
             if(!playerName) playerName = "Default";
-            if(!optionXorO) optionXorO = "X";
+            if(!optionXorO || optionXorO != "O") optionXorO = "X";
 
             if(optionXorO.toUpperCase() == "X") {
                 xPlayer = playerFactory(playerName, "X");
