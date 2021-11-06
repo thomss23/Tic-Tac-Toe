@@ -161,3 +161,20 @@ a {
     font-size: 30px;
   }
 }
+
+@media screen and (max-height: 580px) {
+
+  .board-column {
+    width:70px;
+    height: 70px;
+  }
+
+  .game-menu {
+    font-size: 20px;
+  }
+
+  .restart {
+    font-size: 20px;
+  }
+
+}
