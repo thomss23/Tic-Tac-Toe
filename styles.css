@@ -133,7 +133,7 @@ a {
 
   .left-side {
     position:fixed;
-    bottom: 20%;
+    bottom: 15%;
   
   }
 
@@ -162,11 +162,11 @@ a {
   }
 }
 
-@media screen and (max-height: 580px) {
+@media screen and (max-height: 600px) {
 
   .board-column {
-    width:70px;
-    height: 70px;
+    width:95px;
+    height: 95px;
   }
 
   .game-menu {
@@ -178,3 +178,4 @@ a {
   }
 
 }
+
