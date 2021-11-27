@@ -1,13 +1,4 @@
 
-/*
-====PLAN====
-1) Setup a main menu where the user could select whether to play vs another player or vs AI - done
-2) After the user selects an option, setup HTML && CSS for the board - done
-3) Write PVP logic first - done
-4) Figure out PVE logic using minimax algorithm - needs fixing
-Rule of thumb: if you only ever need ONE of something (gameBoard, displayController), use a module. If you need multiples of something (players!), create them with factories.
-*/
-
 const playerFactory = (name, marker) => {
     const getName = () => name;
     const getMarker = () => marker;
@@ -94,21 +85,19 @@ const Gameboard = (() => {
     
 })();
 
-const DisplayController = (() => {
+const GameController = (() => {
 
     let xPlayer;
     let oPlayer;
+
     const squares = document.querySelectorAll(".board-column");
-    const result = document.querySelector(".result");
+    const menuElements = document.querySelector(".menu");
+    const gameMenu = document.querySelector(".game-menu");
     const restartOp = document.querySelector(".restart");
     const restartButton = restartOp.querySelector(".option");
-    const gameMenu = document.querySelector(".game-menu");
     const backToMenuButton = gameMenu.querySelector(".option");
-    const boardElement = document.querySelector(".board");
-    const menuElements = document.querySelector(".menu");
     const pvpElement = menuElements.querySelectorAll(".option")[0];
     const pveElement = menuElements.querySelectorAll(".option")[1];
-    const minimaxInfo = menuElements.querySelector(".info");
 
     let currentPlayer; 
     let gameOver = false;
@@ -127,24 +116,15 @@ const DisplayController = (() => {
 
     });
 
-
-    const displayTie = () => {
-        result.textContent = "Tie";
-        result.classList.remove("hidden");
-
-    }
-
-    const displayWinner = (winner) => {
-
-        result.textContent = winner.getName() + " won!";
-        result.classList.remove("hidden");
-    }
-
     const restartGame = () => {
         resetParams();
-        restartOp.style.display = "none";
-        result.classList.add("hidden");
+        DisplayController.restartGameUI();
         initiateMoveIfComputer();
+    }
+
+    const resetBoard = () => {
+        DisplayController.resetBoardUI();
+        Gameboard.initBoard();
     }
 
     const resetParams = () => {
@@ -153,20 +133,9 @@ const DisplayController = (() => {
         currentPlayer = xPlayer; 
     }
 
-    const resetBoard = () => {
-        squares.forEach(square => {
-            square.firstChild.textContent = '';
-        })
-        Gameboard.initBoard();
-    }
-
     const returnToMenu = () => {
-        boardElement.style.display = "none";
+        DisplayController.returnToMenuUI();
         resetParams();
-        gameMenu.style.display = "none";
-        menuElements.classList.toggle("hidden");
-        result.classList.add("hidden");
-        restartOp.style.display = "none";
     }
 
     restartButton.addEventListener('click', restartGame);
@@ -193,29 +162,10 @@ const DisplayController = (() => {
 
         element.firstChild.textContent = currentPlayer.getMarker();
 
-        let winOrTie = Gameboard.checkForWinner();
-
-        if(winOrTie) {
-
-            gameOver = true;
-
-            if(winOrTie == "X") {
-                displayWinner(xPlayer);
-            } else if(winOrTie == "O") {
-                displayWinner(oPlayer);
-            } else {
-                displayTie();
-            }
-
-            displayRestartOption();
-        }
+        checkWinConditions()
 
         changePlayer();
 
-    }
-
-    const displayRestartOption = () => {
-        restartOp.style.display = "flex";
     }
 
     const pve = (element) => {
@@ -230,22 +180,7 @@ const DisplayController = (() => {
 
         element.firstChild.textContent = currentPlayer.getMarker();
 
-        let winOrTie = Gameboard.checkForWinner();
-
-        if(winOrTie) {
-
-            gameOver = true;
-
-            if(winOrTie == "X") {
-                displayWinner(xPlayer);
-            } else if(winOrTie == "O") {
-                displayWinner(oPlayer);
-            } else {
-                displayTie();
-            }
-
-            displayRestartOption();
-        }
+        checkWinConditions()
 
         let computerMarker;
         if(currentPlayer.getName() != "AI") {
@@ -266,43 +201,69 @@ const DisplayController = (() => {
 
     }
 
+    function checkWinConditions() {
+
+        let winOrTie = Gameboard.checkForWinner();
+
+        if(winOrTie) {
+
+            gameOver = true;
+
+            if(winOrTie == "X") {
+                DisplayController.displayWinner(xPlayer);
+            } else if(winOrTie == "O") {
+                DisplayController.displayWinner(oPlayer);
+            } else {
+                DisplayController.displayTie();
+            }
+
+            DisplayController.displayRestartOption();
+        }
+    }
+
     function playGame()  {
 
         Gameboard.initBoard();
         playerSelection = this;
 
         if(playerSelection == "player") {
-
-            let playerX = prompt("Player X name");
-            let playerO = prompt("Player O name");
-
-            if(!playerX) playerX = "Default1";
-            if(!playerO) playerO = "Default2";
-
-            xPlayer = playerFactory(playerX, "X");
-            oPlayer = playerFactory(playerO, "O");
-
+            configurePVPMatch();
         } else {
-
-            let playerName = prompt("Your name");
-            let optionXorO = prompt("Play X or O?");
-
-            if(!playerName) playerName = "Default";
-            if(!optionXorO || optionXorO != "O") optionXorO = "X";
-
-            if(optionXorO.toUpperCase() == "X") {
-                xPlayer = playerFactory(playerName, "X");
-                oPlayer = playerFactory("AI", "O");
-            } else {
-                xPlayer = playerFactory("AI", "X");
-                oPlayer = playerFactory(playerName, "O");
-            }
+            configurePVEMatch();
         }
     
         currentPlayer = xPlayer;
-        showBoardAndGameMenu();
+        DisplayController.showBoardAndGameMenu();
         initiateMoveIfComputer();
 
+    }
+
+    function configurePVPMatch() {
+        let playerX = prompt("Player X name");
+        let playerO = prompt("Player O name");
+
+        if(!playerX) playerX = "Default1";
+        if(!playerO) playerO = "Default2";
+
+        xPlayer = playerFactory(playerX, "X");
+        oPlayer = playerFactory(playerO, "O");
+    }
+
+    function configurePVEMatch() {
+
+        let playerName = prompt("Your name");
+        let optionXorO = prompt("Play X or O?");
+
+        if(!playerName) playerName = "Default";
+        if(!optionXorO || optionXorO != "O") optionXorO = "X";
+
+        if(optionXorO.toUpperCase() == "X") {
+            xPlayer = playerFactory(playerName, "X");
+            oPlayer = playerFactory("AI", "O");
+        } else {
+            xPlayer = playerFactory("AI", "X");
+            oPlayer = playerFactory(playerName, "O");
+        }
     }
 
     const initiateMoveIfComputer = () => {
@@ -322,46 +283,73 @@ const DisplayController = (() => {
 
     pvpElement.addEventListener('click', playGame.bind("player"));
     pveElement.addEventListener('click', playGame.bind("ai"));
+ 
+})();
+
+const DisplayController = (() => {
+
+    const squares = document.querySelectorAll(".board-column");
+    const result = document.querySelector(".result");
+    const restartOp = document.querySelector(".restart");
+    const gameMenu = document.querySelector(".game-menu");
+    const boardElement = document.querySelector(".board");
+    const menuElements = document.querySelector(".menu");
+
+
+    const displayTie = () => {
+        result.textContent = "Tie";
+        result.classList.remove("hidden");
+
+    }
+
+    const displayWinner = (winner) => {
+
+        result.textContent = winner.getName() + " won!";
+        result.classList.remove("hidden");
+    }
+
+    const restartGameUI = () => {
+        restartOp.style.display = "none";
+        result.classList.add("hidden");
+    }
+
+    const resetBoardUI = () => {
+        squares.forEach(square => {
+            square.firstChild.textContent = '';
+        })
+    }
+
+    const returnToMenuUI = () => {
+        boardElement.style.display = "none";
+        gameMenu.style.display = "none";
+        menuElements.classList.toggle("hidden");
+        result.classList.add("hidden");
+        restartOp.style.display = "none";
+    }
 
     const showBoardAndGameMenu = () => {
         boardElement.style.display = "flex";
         gameMenu.style.display = "flex";
-        hideMainMenu();
+        DisplayController.hideMainMenu();
     }
 
     const hideMainMenu = () => {
         menuElements.classList.toggle("hidden");
     }
 
-    return {squares};
-    
+    const displayRestartOption = () => {
+        restartOp.style.display = "flex";
+    }
+
+    return {displayWinner, displayTie, restartGameUI, resetBoardUI, returnToMenuUI, showBoardAndGameMenu, hideMainMenu, displayRestartOption}
+
 })();
+
 
 const AI = ((ai, human) => {
 
-    const bestMove = () => {
-        let bestScore = -Infinity;
-        let move;
-        for(let i = 0; i < 9; i++) {
-
-            if(Gameboard.getBoard()[i] == 0) {
-
-                Gameboard.getBoard()[i] = ai;
-                let score = minimax(false);
-                Gameboard.getBoard()[i] = 0;
-
-                if(score > bestScore) {
-                    bestScore = score;
-                    move = i;
-                }
-            }
-        }
-
-        return move;
-    }
-
-
     let scores;
+    let board = Gameboard.getBoard();
 
     if(ai == "O") {
         scores = {
@@ -378,6 +366,27 @@ const AI = ((ai, human) => {
         }
     }
 
+    const bestMove = () => {
+        let bestScore = -Infinity;
+        let move;
+        for(let i = 0; i < 9; i++) {
+
+            if(board[i] == 0) {
+
+                board[i] = ai;
+                let score = minimax(false);
+                board[i] = 0;
+
+                if(score > bestScore) {
+                    bestScore = score;
+                    move = i;
+                }
+            }
+        }
+
+        return move;
+    }
+
     const minimax = (isMaximizing) => {
         let result = Gameboard.checkForWinner();
 
@@ -390,10 +399,10 @@ const AI = ((ai, human) => {
             let bestScore = -Infinity;
             for(let i = 0; i < 9; i++) {
 
-                if(Gameboard.getBoard()[i] == 0) {
-                    Gameboard.getBoard()[i] = ai;
+                if(board[i] == 0) {
+                    board[i] = ai;
                     let score = minimax(false);
-                    Gameboard.getBoard()[i] = 0;
+                    board[i] = 0;
                     bestScore = Math.max(score, bestScore);
                 }
 
@@ -406,10 +415,10 @@ const AI = ((ai, human) => {
             let bestScore = Infinity;
             for(let i = 0; i < 9; i++) {
 
-                if(Gameboard.getBoard()[i] == 0) {
-                    Gameboard.getBoard()[i] = human;
+                if(board[i] == 0) {
+                    board[i] = human;
                     let score = minimax(true);
-                    Gameboard.getBoard()[i] = 0;
+                    board[i] = 0;
                     bestScore = Math.min(score, bestScore);
                 }
 
@@ -421,3 +430,4 @@ const AI = ((ai, human) => {
     return {bestMove};
 
 });
+
