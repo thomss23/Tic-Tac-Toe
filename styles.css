@@ -24,7 +24,7 @@ body {
   border-radius: 10px; 
   cursor: url(assets/chalk.png), auto;	
   border: #868585 solid 10px;
-  background-image: url(assets/background.png);;
+  background-image: url(assets/background.png);
   background-size: cover;
   background-repeat: no-repeat;
   position: relative;
